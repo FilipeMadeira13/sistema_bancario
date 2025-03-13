@@ -1,3 +1,5 @@
+import re
+
 def menu():
     menu = '''
     ======== BEM-VINDO AO SISTEMA BANCÁRIO ========
@@ -66,7 +68,8 @@ def cadastrar_conta_corrente(agencia: str, numero_da_conta: int, usuario: dict):
     return {
         'Agência': agencia,
         'Número da Conta': numero_da_conta,
-        'Usuário': usuario['Nome']
+        'Usuário': usuario['Nome'],
+        'CPF': usuario['CPF']
     }
     
 def listar_usuarios(usuarios: list):
@@ -127,15 +130,16 @@ def main():
                         continue
                     
                     data_de_nascimento = input('Data de nascimento (DD/MM/AAAA): ').strip()
-                    numeros_data = data_de_nascimento.replace('/', '')
+                    padrao_data = r'\d{2}/\d{2}/\d{4}'
                     
-                    if (not '/' in data_de_nascimento) or (len(data_de_nascimento) != 10) or (not numeros_data.isdigit()):
+                    if not re.match(padrao_data, data_de_nascimento):
                         print('Formato de data inválido!')
                         continue
                     
                     cpf = input('CPF (Apenas números): ').strip()
+                    padrao_cpf = r'\d{11}'
                     
-                    if (len(cpf) != 11) or (not cpf.isdigit()):
+                    if not re.match(padrao_cpf, cpf):
                         print('CPF Inválido!')
                         continue
                     
