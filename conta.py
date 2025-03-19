@@ -1,22 +1,38 @@
-from cliente import Cliente
 from historico import Historico
 
 class Conta:
-    def __init__(self, saldo: float, numero: int, agencia: str, cliente: Cliente, historico: Historico) -> None:
-        self._saldo = saldo
+    def __init__(self, numero: int, cliente) -> None:
+        self._saldo = 0
         self._numero = numero
-        self._agencia = agencia
+        self._agencia = '0001'
         self._cliente = cliente
-        self._historico = historico
+        self._historico = Historico()
+     
+    @property   
+    def saldo(self) -> float:
+        return self._saldo
+    
+    @classmethod
+    def nova_conta(cls, cliente, numero: int):
+        return cls(numero, cliente)
+    
+    def sacar(self, valor: float) -> bool:
+        if valor > self._saldo:
+            print(f'Saldo insuficiente! Tente sacar um valor de no máximo R$ {self._saldo:.2f}')
+        elif valor > 0:
+            self._saldo -= valor
+            print(f'Saque de R$ {valor:.2f} efetuado com sucesso.')
+            return True
+        else:
+            print('Erro! Valor inválido.')
         
-    def saldo(self):
-        pass
+        return False
     
-    def nova_conta(self, cliente: Cliente, historico: Historico):
-        pass
-    
-    def sacar(self, valor: float):
-        pass
-    
-    def depositar(self, valor: float):
-        pass
+    def depositar(self, valor: float) -> bool:
+        if valor <= 0:
+            print('Por favor, digite apenas números positivos.')
+            return False
+        
+        self._saldo += valor
+        print(f'Deposito de R$ {valor:.2f} efetuado com sucesso.')
+        return True
