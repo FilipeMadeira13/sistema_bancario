@@ -151,8 +151,9 @@ def exibir_extrato(clientes: list):
     if not transacoes:
         extrato = 'Não existem transações na conta.'
     else:
-        tipo_transacao = input('Digite a letra correspondente se deseja ver apenas as transações relacionada a "[s] Saque" ou "[d] Depósito" (ou qualquer outra para ver todos): ').strip().lower()
+        tipo_transacao_input = input('Digite a letra correspondente se deseja ver apenas as transações relacionada a "[s] Saque" ou "[d] Depósito" (ou qualquer outra para ver todos): ').strip().lower()
     
+        tipo_transacao = 'Saque' if tipo_transacao_input == 's' else 'Deposito' if tipo_transacao_input == 'd' else None
         print('=============== EXTRATO ===============\n')
         for transacao in conta._historico.gerar_relatorio(tipo_transacao):
             extrato += f'\n{transacao["Tipo"]}.......................R$ {transacao["Valor"]:.2f}'
