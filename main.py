@@ -6,7 +6,12 @@ from historico import Historico
 from pessoa_fisica import PessoaFisica
 from saque import Saque
 from transacao import Transacao
+from conta_iterador import ContaIterador
+from datetime import datetime
 import re
+import functools
+
+agora = datetime.now()
 
 def menu():
     menu = '''
@@ -21,8 +26,19 @@ def menu():
     [t]\tListar Contas
     [q]\tSair: 
     '''
-    return input(menu)
+    return input(menu).strip().lower()
 
+def log_transacao(func):
+    @functools.wraps(func)
+    def opcao(*args, **kwargs):
+        print(f'Tipo: {opcao.__name__.title()}')
+        resultado = func(*args, **kwargs)
+        print(f'Data e Hora: {agora.strftime("%d/%m/%Y %H:%M:%S")}')
+        return resultado
+        
+    return opcao
+
+@log_transacao
 def cadastrar_cliente(clientes: list):
     cpf = input('Digite o CPF do cliente (somente números): ').strip()
     
@@ -67,7 +83,8 @@ def cadastrar_cliente(clientes: list):
     clientes.append(cliente)
     
     print('Cliente cadastrado com sucesso!')
-    
+
+@log_transacao    
 def criar_conta(numero_conta: int, clientes: list, contas: list):
     cpf = input('Digite o CPF do cliente (somente números): ').strip()
     
@@ -82,7 +99,8 @@ def criar_conta(numero_conta: int, clientes: list, contas: list):
     cliente._contas.append(conta)
     
     print('Conta criada com sucesso!')
-   
+
+@log_transacao  
 def depositar(clientes: list):
     cpf = input('Digite o CPF do cliente (somente números): ').strip()
     
@@ -107,6 +125,7 @@ def encontrar_cliente(cpf: str, clientes: list):
     
     return cliente_encontrado[0] if cliente_encontrado else None
 
+@log_transacao
 def exibir_extrato(clientes: list):
     cpf = input('Digite o CPF do cliente (somente números): ').strip()
     
@@ -122,13 +141,15 @@ def exibir_extrato(clientes: list):
         return
     
     print('=============== EXTRATO ===============\n')
-    transacoes = conta._historico._transacoes
+    transacoes = conta._historico.transacoes
     
     extrato = ''
     if not transacoes:
         extrato = 'Não existem transações na conta.'
     else:
-        for transacao in transacoes:
+        tipo_transacao = input('Digite a letra correspondente se deseja ver apenas as transações relacionada a "[s] Saque" ou "[d] Depósito" (ou qualquer outra para ver todos): ').strip().lower()
+    
+        for transacao in conta._historico.gerar_relatorio(tipo_transacao):
             extrato += f'\n{transacao["Tipo"]}.......................R$ {transacao["Valor"]:.2f}'
             
     print(extrato)
@@ -137,7 +158,7 @@ def exibir_extrato(clientes: list):
 
 def listar_clientes(clientes: list):
     if not clientes:
-        print('Não existem usuários cadastrados.')
+        print('Não existem clientes cadastrados.')
         return
     
     print('=============== Clientes ===============\n')
@@ -145,13 +166,10 @@ def listar_clientes(clientes: list):
         print(f" - {cliente._nome} / Data de Nascimento: {cliente._data_nascimento} / CPF: {cliente._cpf} / Endereço: {cliente._endereco}")
 
 def listar_contas(contas: list):
-    if not contas:
-        print('Não existem contas cadastradas.')
-        return
-    
-    print('========== Contas Corrente ==========\n')
-    for conta in contas:
-        print(f" {conta._numero} - {conta._cliente._nome}")
+    print('============ Contas Corrente ============\n')
+    for conta in ContaIterador(contas):
+        print(conta)
+        print("-" * 40)
 
 def procurar_conta_cliente(cliente):
     if not cliente._contas:
@@ -166,6 +184,7 @@ def procurar_conta_cliente(cliente):
     
     return cliente._contas[numero - 1]
 
+@log_transacao
 def sacar(clientes: list):
     cpf = input('Digite o CPF do cliente (somente números): ').strip()
     
@@ -190,7 +209,7 @@ def validar_cpf(cpf: str):
                     
     if not re.match(padrao_cpf, cpf):
         print('CPF Inválido!')
-        return None
+        return False
     
     return True
                  
@@ -199,7 +218,7 @@ def validar_data(data: str):
                     
     if not re.match(padrao_data, data):
         print('Formato de data inválido!')
-        return None
+        return False
     
     return True
 
