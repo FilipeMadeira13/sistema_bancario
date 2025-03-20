@@ -7,7 +7,7 @@ class Conta:
         self._agencia = '0001'
         self._cliente = cliente
         self._historico = Historico()
-     
+    
     @property   
     def saldo(self) -> float:
         return self._saldo
@@ -36,3 +36,6 @@ class Conta:
         self._saldo += valor
         print(f'Deposito de R$ {valor:.2f} efetuado com sucesso.')
         return True
+
+    def __str__(self) -> str:
+        return f'Agencia: {self._agencia}\nNúmero da Conta: {self._numero}\nCliente: {self._cliente}\nSaldo: {self._saldo:.2f}'
