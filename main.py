@@ -110,13 +110,17 @@ def depositar(clientes: list):
         print('Cliente não encontrado')
         return None
     
-    valor = float(input(f'Digite o valor do depósito: '))
-    transacao = Deposito(valor)
-    
     conta = procurar_conta_cliente(cliente)
     
     if not conta:
         return
+    
+    if len(conta._historico.transacoes) >= 10:
+        print('Limite de transações diárias atingido. Tente novamente amanhã.')
+        return
+    
+    valor = float(input(f'Digite o valor do depósito: '))
+    transacao = Deposito(valor)
     
     cliente.realizar_transacao(conta, transacao)
     
@@ -140,7 +144,7 @@ def exibir_extrato(clientes: list):
     if not conta:
         return
     
-    print('=============== EXTRATO ===============\n')
+    
     transacoes = conta._historico.transacoes
     
     extrato = ''
@@ -149,6 +153,7 @@ def exibir_extrato(clientes: list):
     else:
         tipo_transacao = input('Digite a letra correspondente se deseja ver apenas as transações relacionada a "[s] Saque" ou "[d] Depósito" (ou qualquer outra para ver todos): ').strip().lower()
     
+        print('=============== EXTRATO ===============\n')
         for transacao in conta._historico.gerar_relatorio(tipo_transacao):
             extrato += f'\n{transacao["Tipo"]}.......................R$ {transacao["Valor"]:.2f}'
             
@@ -194,13 +199,17 @@ def sacar(clientes: list):
         print('Cliente não encontrado')
         return None
     
-    valor = float(input(f'Digite o valor do saque: '))
-    transacao = Saque(valor)
-    
     conta = procurar_conta_cliente(cliente)
     
     if not conta:
         return
+    
+    if len(conta._historico.transacoes) >= 10:
+        print('Limite de transações diárias atingido para essa conta. Tente novamente amanhã.')
+        return
+    
+    valor = float(input(f'Digite o valor do saque: '))
+    transacao = Saque(valor)
     
     cliente.realizar_transacao(conta, transacao)
 
