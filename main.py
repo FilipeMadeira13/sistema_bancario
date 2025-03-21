@@ -16,6 +16,7 @@ agora = datetime.now()
 def menu():
     menu = '''
     ======== BEM-VINDO AO SISTEMA BANCÁRIO ========
+    *ATENÇÃO: MÁXIMO DE 10 TRANSAÇÕES DIÀRIAS POR CONTA*
         Escolha uma opção abaixo:   
     [d]\tDepositar
     [s]\tSacar
@@ -115,10 +116,6 @@ def depositar(clientes: list):
     if not conta:
         return
     
-    if len(conta._historico.transacoes) >= 10:
-        print('Limite de transações diárias atingido. Tente novamente amanhã.')
-        return
-    
     valor = float(input(f'Digite o valor do depósito: '))
     transacao = Deposito(valor)
     
@@ -156,7 +153,7 @@ def exibir_extrato(clientes: list):
         tipo_transacao = 'Saque' if tipo_transacao_input == 's' else 'Deposito' if tipo_transacao_input == 'd' else None
         print('=============== EXTRATO ===============\n')
         for transacao in conta._historico.gerar_relatorio(tipo_transacao):
-            extrato += f'\n{transacao["Tipo"]}.......................R$ {transacao["Valor"]:.2f}'
+            extrato += f'\n{transacao["Data"]} - {transacao["Tipo"]}.......................R$ {transacao["Valor"]:.2f}'
             
     print(extrato)
     print(f'\nSaldo.......................R$ {conta.saldo:.2f}')
@@ -204,11 +201,7 @@ def sacar(clientes: list):
     
     if not conta:
         return
-    
-    if len(conta._historico.transacoes) >= 10:
-        print('Limite de transações diárias atingido para essa conta. Tente novamente amanhã.')
-        return
-    
+        
     valor = float(input(f'Digite o valor do saque: '))
     transacao = Saque(valor)
     

@@ -22,3 +22,13 @@ class Historico:
         for transacao in self._transacoes:
             if tipo_transacao is None or tipo_transacao == transacao['Tipo']:
                 yield transacao
+                
+    def transacoes_do_dia(self):
+        data_atual = datetime.now().strftime('%d/%m/%Y')
+        transacoes = []
+        for transacao in self._transacoes:
+            data_itens = transacao['Data'].split(' ')
+            data_transacao = data_itens[0]
+            if data_atual == data_transacao:
+                transacoes.append(transacao)
+        return transacoes
