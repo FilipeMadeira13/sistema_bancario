@@ -1,5 +1,5 @@
 from transacao import Transacao
-from datetime import datetime
+from datetime import datetime, timezone
 
 class Historico:
     def __init__(self) -> None:
@@ -14,7 +14,7 @@ class Historico:
             {
                 'Tipo': transacao.__class__.__name__,
                 'Valor': transacao._valor,
-                'Data': datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
+                'Data': datetime.now(timezone.utc).strftime('%d/%m/%Y - %H:%M:%S')
             }
         )
         
@@ -24,7 +24,7 @@ class Historico:
                 yield transacao
                 
     def transacoes_do_dia(self):
-        data_atual = datetime.now().strftime('%d/%m/%Y')
+        data_atual = datetime.now(timezone.utc).strftime('%d/%m/%Y')
         transacoes = []
         for transacao in self._transacoes:
             data_itens = transacao['Data'].split(' ')

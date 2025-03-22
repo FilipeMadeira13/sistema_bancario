@@ -1,0 +1,9 @@
+ [22/03/2025 22:41:16]	- Tipo: Depositar
+ - Registros: ([],)	- Resultado: Nenhum Retorno
+--------------------------------------------------------------------------------
+ [22/03/2025 22:41:16]	- Tipo: Cadastrar_Cliente
+ - Registros: ([<PessoaFisica: (98765432147)>],)	- Resultado: Nenhum Retorno
+--------------------------------------------------------------------------------
+ [22/03/2025 22:41:16]	- Tipo: Criar_Conta
+ - Registros: (1, [<PessoaFisica: (98765432147)>], [<ContaCorrente: 0001, 1, Geovanni>])	- Resultado: Nenhum Retorno
+--------------------------------------------------------------------------------

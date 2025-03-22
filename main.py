@@ -7,7 +7,7 @@ from pessoa_fisica import PessoaFisica
 from saque import Saque
 from transacao import Transacao
 from conta_iterador import ContaIterador
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 import re
 import functools
@@ -21,7 +21,7 @@ ARQUIVO_CLIENTES = REGISTROS / 'clientes.txt'
 ARQUIVO_CONTAS = REGISTROS / 'contas.txt'
 
 # Variáveis
-agora = datetime.now()
+agora = datetime.now(timezone.utc)
 
 def menu():
     menu = '''
@@ -52,7 +52,7 @@ def log_transacao(func):
             if not REGISTROS.exists():
                 os.mkdir(REGISTROS)
             with open(ARQUIVO_LOG, 'a', encoding='utf-8') as arquivo:
-                arquivo.write(f' - Data e Hora: {data_hora}\t- Tipo: {tipo}\n - Registros: {args if args else ""}{f" {kwargs}" if kwargs else ""}\t- Resultado: {"Nenhum Retorno" if not resultado else resultado}\n{"-" * 80}\n')
+                arquivo.write(f' [{data_hora}]\t- Tipo: {tipo}\n - Registros: {args if args else ""}{f" {kwargs}" if kwargs else ""}\t- Resultado: {"Nenhum Retorno" if not resultado else resultado}\n{"-" * 80}\n')
         except IOError as e:
             print(f'Erro ao criar o arquivo: {e}')
             return
