@@ -8,9 +8,17 @@ from saque import Saque
 from transacao import Transacao
 from conta_iterador import ContaIterador
 from datetime import datetime
+from pathlib import Path
 import re
 import functools
+import os
 
+# Constantes
+ROOT_PATH = Path(__file__).parent
+REGISTROS = ROOT_PATH / 'registros'
+ARQUIVO_LOG = REGISTROS / 'log.txt'
+
+# Variáveis
 agora = datetime.now()
 
 def menu():
@@ -32,9 +40,25 @@ def menu():
 def log_transacao(func):
     @functools.wraps(func)
     def opcao(*args, **kwargs):
-        print(f'Tipo: {opcao.__name__.title()}')
+        data_hora = agora.strftime("%d/%m/%Y %H:%M:%S")
+        tipo = opcao.__name__.title()
+        print(f'Tipo: {tipo}')
         resultado = func(*args, **kwargs)
-        print(f'Data e Hora: {agora.strftime("%d/%m/%Y %H:%M:%S")}')
+        
+        # Registros de log
+        try:
+            if not REGISTROS.exists():
+                os.mkdir(REGISTROS)
+            with open(ARQUIVO_LOG, 'a', encoding='utf-8') as arquivo:
+                arquivo.write(f' - Data e Hora: {data_hora}\t- Tipo: {tipo}\n - Clientes: {args if args else ""}{f" {kwargs}" if kwargs else ""}\t- Resultado: {"Nenhum retorno" if not resultado else resultado}\n{"-" * 80}\n')
+        except IOError as e:
+            print(f'Erro ao criar o arquivo: {e}')
+            return
+        except Exception as e:
+            print(f'Erro desconhecido: {e}')
+            return
+        
+        print(f'Data e Hora: {data_hora}')
         return resultado
         
     return opcao
@@ -153,7 +177,7 @@ def exibir_extrato(clientes: list):
         tipo_transacao = 'Saque' if tipo_transacao_input == 's' else 'Deposito' if tipo_transacao_input == 'd' else None
         print('=============== EXTRATO ===============\n')
         for transacao in conta._historico.gerar_relatorio(tipo_transacao):
-            extrato += f'\n{transacao["Data"]} - {transacao["Tipo"]}.......................R$ {transacao["Valor"]:.2f}'
+            extrato += f'\n{transacao["Data"]}\n{transacao["Tipo"]}.......................R$ {transacao["Valor"]:.2f}\n'
             
     print(extrato)
     print(f'\nSaldo.......................R$ {conta.saldo:.2f}')
@@ -254,8 +278,8 @@ def main():
             else:
                 print('Por favor digite apenas uma opção válida.')
                 
-        except ValueError:
-            print('Valor inválido! Por favor, digite apenas números.')
+        except ValueError as e:
+            print(f'Valor inválido! Por favor, digite apenas números: {e}')
 
 if __name__ == '__main__':
     main()
