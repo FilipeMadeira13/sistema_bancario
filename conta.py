@@ -12,6 +12,10 @@ class Conta:
     def saldo(self) -> float:
         return self._saldo
     
+    @property
+    def historico(self):
+        return self._historico
+    
     @classmethod
     def nova_conta(cls, cliente, numero: int):
         return cls(numero, cliente)

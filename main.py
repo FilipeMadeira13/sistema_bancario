@@ -17,6 +17,8 @@ import os
 ROOT_PATH = Path(__file__).parent
 REGISTROS = ROOT_PATH / 'registros'
 ARQUIVO_LOG = REGISTROS / 'log.txt'
+ARQUIVO_CLIENTES = REGISTROS / 'clientes.txt'
+ARQUIVO_CONTAS = REGISTROS / 'contas.txt'
 
 # Variáveis
 agora = datetime.now()
@@ -50,7 +52,7 @@ def log_transacao(func):
             if not REGISTROS.exists():
                 os.mkdir(REGISTROS)
             with open(ARQUIVO_LOG, 'a', encoding='utf-8') as arquivo:
-                arquivo.write(f' - Data e Hora: {data_hora}\t- Tipo: {tipo}\n - Clientes: {args if args else ""}{f" {kwargs}" if kwargs else ""}\t- Resultado: {"Nenhum retorno" if not resultado else resultado}\n{"-" * 80}\n')
+                arquivo.write(f' - Data e Hora: {data_hora}\t- Tipo: {tipo}\n - Registros: {args if args else ""}{f" {kwargs}" if kwargs else ""}\t- Resultado: {"Nenhum Retorno" if not resultado else resultado}\n{"-" * 80}\n')
         except IOError as e:
             print(f'Erro ao criar o arquivo: {e}')
             return
@@ -107,6 +109,18 @@ def cadastrar_cliente(clientes: list):
     
     clientes.append(cliente)
     
+    try:
+        if not REGISTROS.exists():
+            os.mkdir(REGISTROS)
+        with open(ARQUIVO_CLIENTES, 'a', encoding='utf-8') as arquivo:
+            arquivo.write(f'{cliente}\n')
+    except IOError as e:
+        print(f'Erro ao criar o arquivo: {e}')
+        return
+    except Exception as e:
+        print(f'Erro desconhecido: {e}')
+        return
+    
     print('Cliente cadastrado com sucesso!')
 
 @log_transacao    
@@ -121,7 +135,19 @@ def criar_conta(numero_conta: int, clientes: list, contas: list):
     
     conta = ContaCorrente.nova_conta(cliente, numero_conta)
     contas.append(conta)
-    cliente._contas.append(conta)
+    cliente.contas.append(conta)
+    
+    try:
+        if not REGISTROS.exists():
+            os.mkdir(REGISTROS)
+        with open(ARQUIVO_CONTAS, 'a', encoding='utf-8') as arquivo:
+            arquivo.write(f'{conta}\n')
+    except IOError as e:
+        print(f'Erro ao criar o arquivo: {e}')
+        return
+    except Exception as e:
+        print(f'Erro desconhecido: {e}')
+        return
     
     print('Conta criada com sucesso!')
 
@@ -166,7 +192,7 @@ def exibir_extrato(clientes: list):
         return
     
     
-    transacoes = conta._historico.transacoes
+    transacoes = conta.historico.transacoes
     
     extrato = ''
     if not transacoes:
@@ -176,7 +202,7 @@ def exibir_extrato(clientes: list):
     
         tipo_transacao = 'Saque' if tipo_transacao_input == 's' else 'Deposito' if tipo_transacao_input == 'd' else None
         print('=============== EXTRATO ===============\n')
-        for transacao in conta._historico.gerar_relatorio(tipo_transacao):
+        for transacao in conta.historico.gerar_relatorio(tipo_transacao):
             extrato += f'\n{transacao["Data"]}\n{transacao["Tipo"]}.......................R$ {transacao["Valor"]:.2f}\n'
             
     print(extrato)
@@ -190,7 +216,7 @@ def listar_clientes(clientes: list):
     
     print('=============== Clientes ===============\n')
     for cliente in clientes:
-        print(f" - {cliente._nome} / Data de Nascimento: {cliente._data_nascimento} / CPF: {cliente._cpf} / Endereço: {cliente._endereco}")
+        print(f" - {cliente.nome} / Data de Nascimento: {cliente.data_nascimento} / CPF: {cliente.cpf} / Endereço: {cliente.endereco}")
 
 def listar_contas(contas: list):
     print('============ Contas Corrente ============\n')
@@ -199,17 +225,17 @@ def listar_contas(contas: list):
         print("-" * 40)
 
 def procurar_conta_cliente(cliente):
-    if not cliente._contas:
+    if not cliente.contas:
         print('Cliente não possui contas.')
         return
     
     numero = int(input('Escolha a conta pelo número (ex: primeira, digite "1"): '))
     
-    if numero > len(cliente._contas) or numero <= 0:
+    if numero > len(cliente.contas) or numero <= 0:
         print('Essa não é uma conta válida.')
         return
     
-    return cliente._contas[numero - 1]
+    return cliente.contas[numero - 1]
 
 @log_transacao
 def sacar(clientes: list):
