@@ -1,7 +1,5 @@
 from datetime import datetime, timezone
 
-from transacao import Transacao
-
 
 class Historico:
     def __init__(self) -> None:

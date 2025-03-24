@@ -45,4 +45,9 @@ class Conta:
         return True
 
     def __str__(self) -> str:
-        return f"Agencia: {self._agencia}\nNúmero da Conta: {self._numero}\nCliente: {self._cliente}\nSaldo: {self._saldo:.2f}"
+        return (
+            f"Agencia: {self._agencia}\n"
+            f"Número da Conta: {self._numero}\n"
+            f"Cliente: {self._cliente}\n"
+            f"Saldo: {self._saldo:.2f}"
+        )

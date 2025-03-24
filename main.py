@@ -4,15 +4,11 @@ import re
 from datetime import datetime, timezone
 from pathlib import Path
 
-from cliente import Cliente
-from conta import Conta
 from conta_corrente import ContaCorrente
 from conta_iterador import ContaIterador
 from deposito import Deposito
-from historico import Historico
 from pessoa_fisica import PessoaFisica
 from saque import Saque
-from transacao import Transacao
 
 # Constantes
 ROOT_PATH = Path(__file__).parent
@@ -29,7 +25,7 @@ def menu():
     menu = """
     ======== BEM-VINDO AO SISTEMA BANCÁRIO ========
     *ATENÇÃO: MÁXIMO DE 10 TRANSAÇÕES DIÀRIAS POR CONTA*
-        Escolha uma opção abaixo:   
+        Escolha uma opção abaixo:
     [d]\tDepositar
     [s]\tSacar
     [e]\tExtrato
@@ -37,7 +33,7 @@ def menu():
     [c]\tCadastrar Conta Corrente
     [l]\tListar Clientes
     [t]\tListar Contas
-    [q]\tSair: 
+    [q]\tSair:
     """
     return input(menu).strip().lower()
 
@@ -56,7 +52,9 @@ def log_transacao(func):
                 os.mkdir(REGISTROS)
             with open(ARQUIVO_LOG, "a", encoding="utf-8") as arquivo:
                 arquivo.write(
-                    f' [{data_hora}]\t- Tipo: {tipo}\n - Registros: {args if args else ""}{f" {kwargs}" if kwargs else ""}\t- Resultado: {"Nenhum Retorno" if not resultado else resultado}\n{"-" * 80}\n'
+                    f" [{data_hora}]\t- Tipo: {tipo}\n"
+                    f'Registros: {args if args else ""}{f" {kwargs}" if kwargs else ""}\n'
+                    f'Resultado: {"Nenhum Retorno" if not resultado else resultado}\n{"-" * 80}\n'
                 )
         except IOError as e:
             print(f"Erro ao criar o arquivo: {e}")
@@ -174,7 +172,7 @@ def depositar(clientes: list):
     if not conta:
         return
 
-    valor = float(input(f"Digite o valor do depósito: "))
+    valor = float(input("Digite o valor do depósito: "))
     transacao = Deposito(valor)
 
     cliente.realizar_transacao(conta, transacao)
@@ -209,7 +207,11 @@ def exibir_extrato(clientes: list):
     else:
         tipo_transacao_input = (
             input(
-                'Digite a letra correspondente se deseja ver apenas as transações relacionada a "[s] Saque" ou "[d] Depósito" (ou qualquer outra para ver todos): '
+                """
+                Digite a letra correspondente se deseja ver
+                as transações relacionada a "[s] Saque" ou "[d] Depósito"
+                (ou qualquer outra para ver todos):
+                """
             )
             .strip()
             .lower()
@@ -237,7 +239,8 @@ def listar_clientes(clientes: list):
     print("=============== Clientes ===============\n")
     for cliente in clientes:
         print(
-            f" - {cliente.nome} / Data de Nascimento: {cliente.data_nascimento} / CPF: {cliente.cpf} / Endereço: {cliente.endereco}"
+            f"{cliente.nome} / Data de Nascimento: {cliente.data_nascimento}\n"
+            f"CPF: {cliente.cpf} / Endereço: {cliente.endereco}\n\n"
         )
 
 
@@ -277,7 +280,7 @@ def sacar(clientes: list):
     if not conta:
         return
 
-    valor = float(input(f"Digite o valor do saque: "))
+    valor = float(input("Digite o valor do saque: "))
     transacao = Saque(valor)
 
     cliente.realizar_transacao(conta, transacao)

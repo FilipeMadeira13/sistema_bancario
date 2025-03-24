@@ -1,6 +1,4 @@
-from cliente import Cliente
 from conta import Conta
-from pessoa_fisica import PessoaFisica
 from saque import Saque
 
 
@@ -31,11 +29,11 @@ class ContaCorrente(Conta):
         return False
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}: {self._agencia}, {self._numero}, {self._cliente._nome}>"
+        return f"<{self.__class__.__name__}: {self._agencia}, {self._numero}, {self._cliente.nome}>"
 
     def __str__(self) -> str:
         return f"""
             Agencia:\t{self._agencia}
             Número da conta:\t{self._numero}
-            Cliente:\t{self._cliente._nome}
+            Cliente:\t{self._cliente.nome}
     """

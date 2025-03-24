@@ -1,6 +1,3 @@
-from conta_corrente import ContaCorrente
-
-
 class ContaIterador:
     def __init__(self, contas) -> None:
         self._contas = contas
